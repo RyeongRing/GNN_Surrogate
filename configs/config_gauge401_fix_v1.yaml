@@ -1,0 +1,60 @@
+## Gauge-corrected v1 experiment (AWS 401/Seocho explicit selection).
+## Builds on timecorrected_v2 (-60min KMA interval fix); additionally fixes
+## the AWS 400(Gangnam)/401(Seocho) station-overlap bug for summer 2022-2024.
+## build_dataloaders selects the corrected adapter from report_lead_steps.
+
+project:
+  id: paper_002_update_gauge401_fix_v1
+  name: paper_002_update_gauge401_fix_v1
+  title: Explicit AWS 401 (Seocho) gauge selection on top of timestamp-corrected v2
+
+research:
+  targets: []
+
+data:
+  inp_path: "inp_versions/seocho_imperv_landcover_strict.inp"
+  ensemble_dir: "results/swmm_timecorrected_v2_gauge401_fix"
+  catalog_path: "data/event_catalog.json"
+  rain_dir: "data/rainfall_timecorrected_v2"
+  swmm_output_dir: "results/swmm_timecorrected_v2_gauge401_fix"
+  rainfall_timestamp_shift_minutes: 0
+  source_rainfall_timestamp_shift_minutes: -60
+  report_lead_steps: 6
+  n_sets: 50
+  expected_split_counts: {calib: 64, train_noobs: 10, val_modelsel: 6, val_conformal: 7, test_temporal: 5}
+
+experiment:
+  loop: 300
+  ensemble_size: 5
+  conformal_alpha: 0.10
+  lambda_cont: 0.1
+  alpha_peak: 0.0
+  use_nse_loss: false
+  use_cont_loss: true
+  hidden_dim: 128
+  n_heads: 4
+  n_layers: 4
+  lr: 5.0e-4
+  weight_decay: 1.0e-4
+  use_cosine_wr: false
+  cosine_T0: 50
+  scalar_rain_decoder: false
+  dropout: 0.0
+  temporal_decoder: false
+  batch_size: 1
+  epochs: 200
+  patience: 50
+  n_swmm_ensemble: 50
+  T_out: 100
+  T_rain: 72
+  wall_time_limit_s: 21600
+
+protocol:
+  id: paper002_timecorrected_v2
+  fixed_rainfall_shift_minutes: -60
+  event_specific_lag_optimisation: false
+  symmetric_baseline: true
+  legacy_outputs_preserved: true
+
+pipeline:
+  current_phase: corrected_v2_recalculation

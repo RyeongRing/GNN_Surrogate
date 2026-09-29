@@ -1,0 +1,47 @@
+project:
+  id: paper_002_update_gauge401_fix_v1_no_cont
+  name: paper_002_update_gauge401_fix_v1_no_cont
+  title: Gauge-corrected v1 matched continuity-loss ablation
+
+research:
+  targets: []
+
+data:
+  inp_path: "inp_versions/seocho_imperv_landcover_strict.inp"
+  ensemble_dir: "results/swmm_timecorrected_v2_gauge401_fix"
+  catalog_path: "data/event_catalog.json"
+  rain_dir: "data/rainfall_timecorrected_v2"
+  report_lead_steps: 6
+  n_sets: 50
+  expected_split_counts: {calib: 64, train_noobs: 10, val_modelsel: 6, val_conformal: 7, test_temporal: 5}
+
+experiment:
+  ensemble_size: 5
+  conformal_alpha: 0.10
+  lambda_cont: 0.0
+  alpha_peak: 0.0
+  use_nse_loss: false
+  use_cont_loss: true
+  hidden_dim: 128
+  n_heads: 4
+  n_layers: 4
+  lr: 5.0e-4
+  weight_decay: 1.0e-4
+  use_cosine_wr: false
+  scalar_rain_decoder: false
+  dropout: 0.0
+  temporal_decoder: false
+  batch_size: 1
+  epochs: 200
+  patience: 50
+  n_swmm_ensemble: 50
+  T_out: 100
+  T_rain: 72
+  wall_time_limit_s: 21600
+
+protocol:
+  id: paper002_gauge401_fix_v1_no_cont
+  matched_against: paper002_gauge401_fix_v1
+  only_intended_difference: "lambda_cont 0.0 versus 0.1"
+  fixed_rainfall_shift_minutes: -60
+  event_specific_lag_optimisation: false
