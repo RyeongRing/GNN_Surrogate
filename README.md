@@ -67,10 +67,7 @@ figure-generation commands are provided in
 
 ## Data Availability
 
-Access to the Seocho-gu SWMM model, sewer-network data and water-level observations
-requires approval from the Seoul Metropolitan Government. These restricted data,
-their processed and simulated derivatives, trained weights and prediction caches
-are excluded from this code-only release.
+Access to the Seocho-gu sewer-network data and water-level observations requires approval from the Seoul Metropolitan Government. The SWMM model was constructed by the authors using these data. These restricted data, their processed and simulated derivatives, trained weights and prediction caches are excluded from this code-only release.
 
 The published [Bellinge source data](https://doi.org/10.5194/essd-13-4779-2021) are
 available separately. Study-specific input requirements are described in
