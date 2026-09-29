@@ -1,0 +1,9 @@
+# Install the appropriate CPU/CUDA torch wheel first (README).
+# Portable direct dependencies, not an exact training-environment lock.
+torch>=2.6,<3
+torch-geometric>=2.6,<3
+numpy>=1.26,<3
+pandas>=2.2,<4
+scipy>=1.13,<2
+matplotlib>=3.8,<4
+PyYAML>=6,<7

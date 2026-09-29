@@ -1,0 +1,3 @@
+# Optional: generating SWMM archives from authorized INP inputs.
+pyswmm>=2,<3
+swmm-toolkit>=0.16,<0.18
