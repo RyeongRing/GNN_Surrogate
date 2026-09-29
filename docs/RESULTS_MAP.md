@@ -1,4 +1,4 @@
-# Final result-to-code map
+# Study workflows and result-to-code map
 
 The final protocol is gauge401fix, with the corrected rainfall timestamps and
 explicit AWS 401 selection. Filenames containing `timecorrected_v2` can be
@@ -38,6 +38,96 @@ Every outer seed is a five-member ensemble. The release consolidates the origina
 runner. Existing manuscript JSONs are not overwritten by this consolidation.
 The two residual definitions remain distinct and neither validates physical
 conduit flows. Pooled NSE is computed over all evaluated node-time samples.
+
+## Running the workflows
+
+Run these commands from the repository root after supplying the authorized inputs
+listed in [Data and Protocol](DATA_PROTOCOL.md). Final configurations are
+`configs/config_gauge401_fix_v1*.yaml`.
+
+### Primary and matched evaluation
+
+Check input files and the primary checkpoint ensemble:
+
+```sh
+python scripts/check_release_inputs.py --checkpoint results/checkpoints/loop_300
+```
+
+Evaluate the primary model on the temporal split:
+
+```sh
+python -m src.evaluate --config configs/config_gauge401_fix_v1.yaml --checkpoint results/checkpoints/loop_300 --loop_id 300 --seed 42 --eval_split test_temporal --output results/release_reproduction/primary_test.json
+```
+
+The evaluator requires a complete checkpoint ensemble and calculates pooled depth
+metrics, timestep-conditioned intervals and both continuity diagnostics over the
+chosen split.
+
+Preview all eight-seed, three-arm evaluations, then summarize completed runs:
+
+```sh
+python scripts/run_final_protocol.py
+python scripts/run_final_protocol.py --action summarize
+```
+
+Add `--execute` to the first command to run evaluation, or use
+`--arms with_continuity --seeds 42` to select the primary arm and seed. Outputs
+are saved in `results/release_reproduction`. Summaries report means, sample
+standard deviations and paired differences.
+
+### Training
+
+Preview training for the primary ensemble:
+
+```sh
+python scripts/run_final_protocol.py --action train --arms with_continuity --seeds 42
+```
+
+Add `--execute` to start training. Replacing existing training or evaluation
+artifacts requires `--overwrite` on the corresponding direct command.
+
+### Diagnostics and figures
+
+```sh
+python -m src.pernode_coverage_gauge401fix --config configs/config_gauge401_fix_v1.yaml
+python -m src.loo_bootstrap_conformal_gauge401fix --config configs/config_gauge401_fix_v1.yaml
+python -m src.analysis.generate_fig6_prediction_intervals_gauge401fix --config configs/config_gauge401_fix_v1.yaml
+python -m src.analysis.generate_fig7_pernode_coverage_gauge401fix
+```
+
+These commands perform inference or post-processing. Figure 6 uses the primary
+checkpoint ensemble; Figure 7 reads the node-coverage CSV from the first command.
+
+### Cross-catchment adaptation
+
+The following commands perform node-head fine-tuning:
+
+```sh
+python -m bellinge.bellinge_primary_gauge401fix --config configs/config_gauge401_fix_v1.yaml
+python -m bellinge.bellinge_exact_matched_gauge401fix --config configs/config_gauge401_fix_v1.yaml
+```
+
+Set `BELLINGE_DATA_ROOT` to use an alternative target-data location. The matched
+control uses identical node-head initial weights within each pair and reports
+raw pooled NSE as its primary metric.
+
+Recreate Figure 8 from its original prediction cache:
+
+```sh
+python -m src.analysis.generate_fig9_bellinge_two_panel_gauge401fix --node 430 --sample 70
+```
+
+The default is plot-only and requires the cache. `--recompute` explicitly starts
+a new 150-epoch fine-tuning run; specify a new `--cache` path to preserve the
+original. Panel (a) uses designated primary-run values, while panel (b) displays
+a separate execution. The displayed series NSE is a single-trajectory metric,
+distinct from the node-level aggregate.
+
+Evaluate reuse of source-catchment interval widths on Bellinge:
+
+```sh
+python scripts/recompute_bellinge_interval_transfer_final.py
+```
 
 ## Historical modules
 
